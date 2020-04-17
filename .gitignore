@@ -164,3 +164,6 @@ TSWLatexianTemp*
 =======
 TSWLatexianTemp*
 >>>>>>> splitDoc
+
+# Very large data-files!!
+*.rds
