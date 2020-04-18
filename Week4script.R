@@ -10,17 +10,53 @@ SCC <- readRDS("data/Source_Classification_Code.rds")
 # Using the base plotting system, make a plot showing the total PM2.5 emission
 # from all sources for each of the years 1999, 2002, 2005, and 2008.
 
+#calculates the mean of values from each location for each year
+mean.from.each.fip <- with(NEI, tapply(Emissions, list(fips,year), mean, na.rm=TRUE))
+
+#creates a vector of which locations has values for each year
+completes <- complete.cases(mean.from.each.fip)
+
+#creates a matrix of means from each fip for each year, but only the locations with measures from all years
+complete.mean.from.each.fip <- mean.from.each.fip[completes,]
+
+#calculates the total emissions from each year by adding the means from each fip together
+total.emissions <- colSums(complete.mean.from.each.fip)
+
+#plots the total emissions from each year as a barchart
+barplot(total.emissions, main = "Total PM2.5 emissions", ylab = "PM2.5 in tonnes")
+
+boxplot(log10(complete.mean.from.each.fip))
 
 ##### Have total emissions from PM2.5 decreased in the Baltimore City, Maryland #####
-# (fips == "24510"\color{red}{\verb|fips == "24510"|}fips=="24510") from 1999 to 2008?
+# (fips == "24510") from 1999 to 2008?
 # Use the base plotting system to make a plot answering this question.
 
+Baltimore.city <- complete.mean.from.each.fip["24510",]
+
+barplot(Baltimore.city, main = "Total PM2.5 emissions", ylab = "PM2.5 in tonnes")
 
 ##### Of the four types of sources indicated by the #####
-# type\color{red}{\verb|type|}type (point, nonpoint, onroad, nonroad) variable,
+# type (point, nonpoint, onroad, nonroad) variable,
 # which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City?
 # Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
 
+Baltimore.city2 <- NEI[which(NEI$fips == 24510), ]
+
+sum.baltimore <- with(Baltimore.city2, tapply(Emissions, list(type,year), sum, na.rm=TRUE))
+
+plot(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=1, pch=20, type="n", ylim = c(0,2200), main = "Emissions in Baltimore City", ylab = "PM2.5 in tonnes")
+points(x = c(1999,2002,2005,2008), y = sum.baltimore[1,], col=1, pch=20)
+lines(x = c(1999,2002,2005,2008), y = sum.baltimore[1,], col=1)
+points(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=2, pch=20)
+lines(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=2)
+points(x = c(1999,2002,2005,2008), y = sum.baltimore[3,], col=3, pch=20)
+lines(x = c(1999,2002,2005,2008), y = sum.baltimore[3,], col=3)
+points(x = c(1999,2002,2005,2008), y = sum.baltimore[4,], col=4, pch=20)
+lines(x = c(1999,2002,2005,2008), y = sum.baltimore[4,], col=4)
+
+legend("left", legend=c("Non-road", "Nonpoint", "On-road", "Point"),
+       col=c("black", "red", "green", "blue"), lty=1, cex=0.8,
+       box.lty=1)
 
 ##### Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008? #####
 
