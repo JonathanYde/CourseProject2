@@ -31,8 +31,10 @@ boxplot(log10(complete.mean.from.each.fip))
 # (fips == "24510") from 1999 to 2008?
 # Use the base plotting system to make a plot answering this question.
 
+#Creates a matrix with all the observations from Baltimore City
 Baltimore.city <- complete.mean.from.each.fip["24510",]
 
+#Plots the PM2.5 emissions in Baltimore City over the years
 barplot(Baltimore.city, main = "Total PM2.5 emissions", ylab = "PM2.5 in tonnes")
 
 ##### Of the four types of sources indicated by the #####
@@ -40,26 +42,61 @@ barplot(Baltimore.city, main = "Total PM2.5 emissions", ylab = "PM2.5 in tonnes"
 # which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City?
 # Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
 
+#Creates a dataframe with all the observations from the original dataframe from Baltimore City
 Baltimore.city2 <- NEI[which(NEI$fips == 24510), ]
 
+#Calculates the sums of emissions for each year from each emission type in Baltimore City
 sum.baltimore <- with(Baltimore.city2, tapply(Emissions, list(type,year), sum, na.rm=TRUE))
 
+#Prepares to create a plot with the different emission types in Baltimore City
 plot(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=1, pch=20, type="n", ylim = c(0,2200), main = "Emissions in Baltimore City", ylab = "PM2.5 in tonnes")
+
+#Adds points and lines for "Non-road" emissions
 points(x = c(1999,2002,2005,2008), y = sum.baltimore[1,], col=1, pch=20)
 lines(x = c(1999,2002,2005,2008), y = sum.baltimore[1,], col=1)
+
+#Adds points and lines for "Nonpoint" emissions
 points(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=2, pch=20)
 lines(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=2)
+
+#Adds points and lines for "On-road" emissions
 points(x = c(1999,2002,2005,2008), y = sum.baltimore[3,], col=3, pch=20)
 lines(x = c(1999,2002,2005,2008), y = sum.baltimore[3,], col=3)
+
+#Adds points and lines for "Point" emissions
 points(x = c(1999,2002,2005,2008), y = sum.baltimore[4,], col=4, pch=20)
 lines(x = c(1999,2002,2005,2008), y = sum.baltimore[4,], col=4)
 
+#Adds a legend
 legend("left", legend=c("Non-road", "Nonpoint", "On-road", "Point"),
        col=c("black", "red", "green", "blue"), lty=1, cex=0.8,
        box.lty=1)
 
+
 ##### Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008? #####
 
+#Stores a dataframe with all entries with "coal" in the short name
+coal <- SCC[which(grepl("Coal",x = SCC$Short.Name)),]
+
+#Stores a datafram with all entries with "combustion" in SCC.Level.One AND "coal" in the short name
+coal.comb <- coal[which(grepl("Combustion", x = coal$SCC.Level.One)),]
+
+head(coal.comb$SCC)
+
+#Stores a dataframe of PM2.5 emissions where SCC matches the SCCs from "coal" and "combustion"
+coal.emissions <- NEI[which(NEI$SCC %in% coal.comb$SCC),]
+
+plot(as.factor(coal.emissions$year), coal.emissions$Emissions)
+
+mean.from.each.fip2 <- with(coal.emissions, tapply(Emissions, list(fips,year), mean, na.rm=TRUE))
+
+completes2 <- complete.cases(mean.from.each.fip2)
+
+complete.mean.from.each.fip2 <- mean.from.each.fip2[completes2,]
+
+total.emissions2 <- colSums(complete.mean.from.each.fip2)
+
+barplot(total.emissions2, main = "PM2.5 emissions from coal combustion", ylab = "PM2.5 in tonnes")
 
 ##### How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City? #####
 
