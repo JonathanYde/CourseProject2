@@ -39,29 +39,3 @@ pppp <- ppp + geom_point(data=sum.baltimore, aes(x=c(1999,2002,2005,2008), y=`PO
 png(filename = "plot3.png")
 pppp
 dev.off()
-
-plot(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=1, pch=20, type="n", ylim = c(0,2200), main = "Emissions in Baltimore City", xlab = "Year", ylab = "PM2.5 in tonnes")
-
-
-
-#Adds points and lines for "Non-road" emissions
-points(x = c(1999,2002,2005,2008), y = sum.baltimore[1,], col=1, pch=20)
-lines(x = c(1999,2002,2005,2008), y = sum.baltimore[1,], col=1)
-
-#Adds points and lines for "Nonpoint" emissions
-points(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=2, pch=20)
-lines(x = c(1999,2002,2005,2008), y = sum.baltimore[2,], col=2)
-
-#Adds points and lines for "On-road" emissions
-points(x = c(1999,2002,2005,2008), y = sum.baltimore[3,], col=3, pch=20)
-lines(x = c(1999,2002,2005,2008), y = sum.baltimore[3,], col=3)
-
-#Adds points and lines for "Point" emissions
-points(x = c(1999,2002,2005,2008), y = sum.baltimore[4,], col=4, pch=20)
-lines(x = c(1999,2002,2005,2008), y = sum.baltimore[4,], col=4)
-
-#Adds a legend
-legend("left", legend=c("Non-road", "Nonpoint", "On-road", "Point"),
-       col=c("black", "red", "green", "blue"), lty=1, cex=0.8,
-       box.lty=1)
-
